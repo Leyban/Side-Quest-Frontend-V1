@@ -1,0 +1,32 @@
+{
+  "files": {
+    "main.css": "/Side-Quest-Frontend-V1/static/css/main.c72c5174.css",
+    "main.js": "/Side-Quest-Frontend-V1/static/js/main.6aca6454.js",
+    "static/media/SideQuestFullLogo.svg": "/Side-Quest-Frontend-V1/static/media/SideQuestFullLogo.1d38e508653a9e0233cecbfa164312c2.svg",
+    "static/media/Edit.svg": "/Side-Quest-Frontend-V1/static/media/Edit.0fdad96dd393c3a5b7ae77b9ebf4f9b6.svg",
+    "static/media/TrashCan.svg": "/Side-Quest-Frontend-V1/static/media/TrashCan.cdb9c9be18575bc0e9be25682819b297.svg",
+    "static/media/GreenFlag.svg": "/Side-Quest-Frontend-V1/static/media/GreenFlag.ba645a13d49ed0463635cdc087bedfa2.svg",
+    "static/media/Save.svg": "/Side-Quest-Frontend-V1/static/media/Save.cdb27c353637f7afe44d7bc9b6239817.svg",
+    "index.html": "/Side-Quest-Frontend-V1/index.html",
+    "static/media/Search.svg": "/Side-Quest-Frontend-V1/static/media/Search.f925000c06cb55f62d3eb58f9a6dbff5.svg",
+    "static/media/RedCross.svg": "/Side-Quest-Frontend-V1/static/media/RedCross.3b923e5eab403c5be23c316beba1e804.svg",
+    "static/media/GreyCross.svg": "/Side-Quest-Frontend-V1/static/media/GreyCross.547141d9310ec65de965fe52d636074b.svg",
+    "static/media/Power.svg": "/Side-Quest-Frontend-V1/static/media/Power.d97d137945a1342cb7768403cb8a7e26.svg",
+    "static/media/GreenPlus.svg": "/Side-Quest-Frontend-V1/static/media/GreenPlus.91913a813a695adfb81ce1c264c29750.svg",
+    "static/media/GreyCheck.svg": "/Side-Quest-Frontend-V1/static/media/GreyCheck.bd3d902e35e4f2ba13e1ae144c270b2f.svg",
+    "static/media/ThickGreenCheck.svg": "/Side-Quest-Frontend-V1/static/media/ThickGreenCheck.f972409827e153db49a2b809c43a505b.svg",
+    "static/media/CurvedArrow.svg": "/Side-Quest-Frontend-V1/static/media/CurvedArrow.866573f3b73892b94ad56e595439753e.svg",
+    "static/media/User.svg": "/Side-Quest-Frontend-V1/static/media/User.2cc7412a193ac7217cc0d73e84d368be.svg",
+    "static/media/Arrow Left.svg": "/Side-Quest-Frontend-V1/static/media/Arrow Left.add4d32968e7081c26168edb8dd45ad2.svg",
+    "static/media/Selected.svg": "/Side-Quest-Frontend-V1/static/media/Selected.222dda650cb77fa10f942f1b0a0f3d0a.svg",
+    "static/media/Check.svg": "/Side-Quest-Frontend-V1/static/media/Check.89e11b4cc6a6245521ba9e9d58664ebc.svg",
+    "static/media/Arrow.svg": "/Side-Quest-Frontend-V1/static/media/Arrow.e6722f21dc45f74665e7d52554f47c58.svg",
+    "static/media/Tag.svg": "/Side-Quest-Frontend-V1/static/media/Tag.11c862f99427e913af08cb7c884745b5.svg",
+    "main.c72c5174.css.map": "/Side-Quest-Frontend-V1/static/css/main.c72c5174.css.map",
+    "main.6aca6454.js.map": "/Side-Quest-Frontend-V1/static/js/main.6aca6454.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.c72c5174.css",
+    "static/js/main.6aca6454.js"
+  ]
+}
