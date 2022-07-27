@@ -18,11 +18,11 @@ const authLink = setContext((_, { headers }) => {
 });
 
 const httpLink = new HttpLink({
-  uri: `http://localhost:4000/`,
+  uri: `https://guarded-woodland-41534.herokuapp.com/`,
 });
 
 const wsLink = new WebSocketLink({
-  uri: `ws://localhost:4000/graphql`,
+  uri: `wss://guarded-woodland-41534.herokuapp.com/graphql`,
   options: {
     reconnect: true,
   },
