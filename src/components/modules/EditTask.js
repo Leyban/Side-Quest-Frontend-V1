@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from "@apollo/client"
 import { useEffect, useState } from "react"
-import { ALL_ROOT_TASKS, ALL_TAGS, EDIT_TASK, GET_TASK_TREE, NEW_TASK, USER } from "../../queries"
+import { ALL_ROOT_TASKS, ALL_TAGS, EDIT_TASK, NEW_TASK, TASK_DETAILS, USER } from "../../queries"
 import Dropdown from "../subcomponents/Dropdown"
 import Scheduler from "./Scheduler"
 
@@ -10,7 +10,7 @@ const EditTask = ({
     location, 
     setFalseToExit, 
     creatingNewTask=false, 
-    taskpadTask,
+    setTaskpadTask,
     setNotification,
 }) => {
     const [title, setTitle] = useState(task.title)
@@ -23,23 +23,81 @@ const EditTask = ({
     let breadcrumbs =''
 
     const allTags = useQuery(ALL_TAGS)
-    const [saveNewTask] = useMutation(NEW_TASK, 
-        {
-            refetchQueries: [
-                { query: ALL_ROOT_TASKS }, 
-                { query: USER }, 
-                { query: GET_TASK_TREE, variables: {id:taskpadTask 
-                    ? task.root
-                        ? taskpadTask.id 
-                        : task.supertask[task.supertask.length -1]
-                    : null
-                }}
-            ]
-        })
-    const [saveEditedTask] = useMutation(EDIT_TASK,
-        {
-            refetchQueries: [{ query: ALL_ROOT_TASKS }]
-        })
+    const [saveNewTask] = useMutation(NEW_TASK, {
+        onError: error => {
+            console.log(error);
+        },
+        update(
+            cache,
+            {
+                data: { newTask }
+            }
+        ) {
+            if(newTask.root){
+                try {
+                    cache.updateQuery({ query: ALL_ROOT_TASKS}, data => ({
+                        allRootTasks: data.allRootTasks.concat({...newTask, subtasks:[]})
+                    }))
+                } catch (error) {
+                    console.log('AllRoot Error', error)
+                }
+                try {
+                    cache.updateQuery({ query: USER }, data => ({
+                        me: {...data.me, ongoing: data.me.ongoing.concat(newTask.id) }
+                    }))
+                } catch (error) {
+                    console.log('User ongoing list error', error)
+                }
+                
+            } else {
+                cache.modify({
+                    id: `Task:${task.supertask.at(-1)}`,
+                    fields: {
+                      subtasks(existingSubtaskRefs, {readField}) {
+                        
+                        let newTaskRef
+                        try {
+                            newTaskRef = cache.writeFragment({
+                                data: {...newTask},
+                                fragment: TASK_DETAILS
+                            })
+                        } catch (error) {
+                            console.log('taskRef Error', newTask, newTaskRef, error)
+                        }
+                        // if the new task is already present
+                        if (existingSubtaskRefs.some(
+                            ref => readField('id', ref) === newTask.id
+                        )) {
+                            return existingSubtaskRefs;
+                        }
+                        return [...existingSubtaskRefs, newTaskRef]
+                      },
+                    },
+                })
+            }
+        }
+    })
+    const [saveEditedTask] = useMutation(EDIT_TASK, {
+        update(
+            cache,
+            {
+                data: { updateTask }
+            }
+        ){
+            cache.modify({
+                id: cache.identify(updateTask),
+                fields: {
+                    title(){return updateTask.title},
+                    description(){return updateTask.description},
+                    tag(){return updateTask.tag},
+                    schedule(){return updateTask.schedule}
+                }
+            })
+        },
+        onError: error => {
+            console.log(error);
+        },
+    })
 
     if(location){   
         for (let i = 0; i < location.length; i++) {
@@ -62,16 +120,16 @@ const EditTask = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
     },[allTags.data])
 
-    const handleCancel = () => {
-        setTask()
-        setFalseToExit(false)
-    }
+    const compileTask = () => {
+        const findTag = () => {
+            const tagToReturn = allTags.data.allTags.find(t => t.name === tag)
+            if (tagToReturn){
+                return tagToReturn.id
+            }
+            return null
+        }
 
-    const handleSave = () => {
-        const {subtasks, ...newTask} = task
-        newTask.title = title
-        newTask.description = description
-        newTask.scheduled = scheduled
+        const newTask = {...task, title, description, scheduled}
         newTask.schedule = {
             category: schedule.category,
             start: schedule.start,
@@ -86,17 +144,50 @@ const EditTask = ({
         }
         newTask.tag = tag === 'none' 
             ? null
-            : allTags.data.allTags.find(t => t.name === tag).id
+            : findTag()
 
+        return newTask
+    }
+
+
+    const handleSave = () => {
+        const newTask = compileTask()
+        const {subtasks, ...taskToSave} = newTask
+        
+        // For new Tasks
         if(creatingNewTask){
             setNotification(`Added: ${newTask.title.substring(0,40)}`)
-            saveNewTask({variables: {...newTask}})
-            setTask()
+            saveNewTask({
+                variables: taskToSave,
+                optimisticResponse:{
+                    newTask: {
+                        ...taskToSave,
+                        id: 'temp-id',
+                        __typename: 'Task'
+                    }
+                }
+            })
+        // Editing Task
         } else {
             setNotification(`Updated: ${newTask.title.substring(0,40)}`)
-            saveEditedTask({variables: {...newTask}})
+            saveEditedTask({
+                variables: taskToSave,
+                optimisticResponse:{
+                    updateTask: {
+                        ...taskToSave,
+                        __typename: 'Task'
+                    }
+                }
+            })
         }
 
+
+        setTask()
+        setFalseToExit(false)
+    }
+
+    const handleCancel = () => {
+        setTask()
         setFalseToExit(false)
     }
 

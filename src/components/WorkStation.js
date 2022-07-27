@@ -46,7 +46,7 @@ const WorkStation = ({user, taskToPass, setTaskToPass, setGreet, setNotification
         <div className="work-station">
             <div className="taskpad module">
                 {((!newTask && !editTask) && task ) && <>
-                    {taskLocation.length>0 && <p>
+                    {taskLocation.length>1 && <p>
                         {taskLocation.map(taskIterate=> <span key={taskIterate.id} onClick={()=>handleNavigateLocation(taskIterate)}>
                             {`${taskIterate.title} > `}
                         </span>)}
@@ -71,19 +71,19 @@ const WorkStation = ({user, taskToPass, setTaskToPass, setGreet, setNotification
                     task={taskToEdit} 
                     setTask={setTaskToEdit} 
                     setFalseToExit={setEditTask} 
+                    setTaskpadTask={setTaskpadTask}
                     location={tasktoEditLocation}
                     user={user}
-                    taskpadTask={task}
                     setNotification={setNotification}
                 />}
                 {newTask && <EditTask 
                     task={taskToEdit} 
                     setTask={setTaskToEdit} 
+                    setTaskpadTask={setTaskpadTask}
                     setFalseToExit={setNewTask} 
                     creatingNewTask={true} 
                     location={tasktoEditLocation}
                     user={user} 
-                    taskpadTask={task}
                     setNotification={setNotification}
                 />}
             </div>

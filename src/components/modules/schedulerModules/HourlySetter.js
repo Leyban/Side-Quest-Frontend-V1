@@ -75,7 +75,7 @@ const HourlySetter = ({ schedule, setSchedule }) => {
             </div>
             {resets && (
                 <div className="set-time">
-                    <Dropdown options={12} value={resetHour} setValue={setResetHour} /><span>hr</span>
+                    <Dropdown options={24} value={resetHour} setValue={setResetHour} /><span>hr</span>
                     
                     <Dropdown options={59} value={resetMinute} setValue={setResetMinute} /><span>min</span>
                 </div>

@@ -18,11 +18,11 @@ const authLink = setContext((_, { headers }) => {
 });
 
 const httpLink = new HttpLink({
-  uri: `https://guarded-woodland-41534.herokuapp.com/`,
+  uri: `http://localhost:4000/`,
 });
 
 const wsLink = new WebSocketLink({
-  uri: `wss://guarded-woodland-41534.herokuapp.com/graphql`,
+  uri: `ws://localhost:4000/graphql`,
   options: {
     reconnect: true,
   },
@@ -38,7 +38,46 @@ const splitLink = split(
 );
 
 const client = new ApolloClient({
-  cache: new InMemoryCache(),
+  cache: new InMemoryCache({
+    typePolicies: {
+      Task: {
+        merge: true,
+        fields:{
+          subtasks:{
+            // merging hellhole to get rid of the warning
+            merge(existing, incoming, { readField, mergeObjects }) {
+              const merged = existing ? existing.slice(0) : [];
+              const subtaskIdToIndex = Object.create(null);
+              if (existing) {
+                existing.forEach((subtask, index) => {
+                  subtaskIdToIndex[readField("id", subtask)] = index;
+                });
+              }
+              incoming.forEach(subtask => {
+                const id = readField("id", subtask);
+                const index = subtaskIdToIndex[id];
+                if (typeof index === "number") {
+                  // Merge the new subtask data with the existing subtask data.
+                  merged[index] = mergeObjects(merged[index], subtask);
+                } else {
+                  // First time we've seen this subtask in this array.
+                  subtaskIdToIndex[id] = merged.length;
+                  merged.push(subtask);
+                }
+              });
+              return merged;
+            }
+          },
+          schedule:{
+            merge:true
+          }
+        }
+      },
+      Tag: {
+        merge: true
+      },
+    }
+  }),
   link: splitLink,
 });
 

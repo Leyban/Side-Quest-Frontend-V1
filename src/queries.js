@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client";
 
-const TASK_DETAILS = gql`
+export const TASK_DETAILS = gql`
   fragment TaskDetails on Task {
     title
     completed
@@ -61,6 +61,8 @@ query Query($tag: String) {
       subtasks {
         id
         title
+        description
+        completed
       }
     }
   }
@@ -171,8 +173,8 @@ export const APPEND_TASK = gql`
 // Mutations
 // Tasks
 export const NEW_TASK = gql`
-    mutation Mutation($title: String!, $scheduled: Boolean!, $root: Boolean, $supertask: [ID], $description: String, $tag: ID, $schedule: ScheduleInput!) {
-        newTask(title: $title, scheduled: $scheduled, root: $root, supertask: $supertask, description: $description, tag: $tag, schedule: $schedule) {
+    mutation Mutation($id:ID ,$title: String!, $scheduled: Boolean!, $root: Boolean, $supertask: [ID], $description: String, $tag: ID, $schedule: ScheduleInput!) {
+        newTask(id:$id ,title: $title, scheduled: $scheduled, root: $root, supertask: $supertask, description: $description, tag: $tag, schedule: $schedule) {
           ...TaskDetails
         }
     }

@@ -1,70 +1,48 @@
-# Getting Started with Create React App
+# Side Quest App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This is a single page task management app
 
-## Available Scripts
+This is a full stack procject that I made for myself
 
-In the project directory, you can run:
+# Stack Used
 
-### `npm start`
+This app uses the following:
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+React
+Apollo
+GraphQL
+Express
+Node
+MongoDB
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+# Features
 
-### `npm test`
+You can do the following in the app
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Create Tasks
 
-### `npm run build`
+As all task management apps you can make tasks, add a time to tell what time such task will start, when will it end, and if the task should reset at a certain point.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+You can also add a tag to your task to organize your tasklist.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## Subtasks
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+You can make as many subtasks as you want and each subtask can have as many subtask as you want.
 
-### `npm run eject`
+## Saved Tasks
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+You can save Tasks and Subtasks if you want to. For tasks, you can add another instance of it in your task list. For subtasks, you can select a task in your active task list to append it to.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## Performance and Issues
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+At the current state of the application, the tasks are updated in real time for every modification to the task that you do. The app utilizes Apollo Client's Cache system to make a smoother and snappier App experience.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+At the minute, the app is not fully responsive and loading screens could use some improvements. I am planning on making a native version of it when I'm done being distracted by new projects.
 
-## Learn More
+## Todos for Future Updates
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+To fix responsiveness for mobile screens
+To add proper loading screens
+To add profile pictures
+To add client to server subscription
+To add shared tasks feature

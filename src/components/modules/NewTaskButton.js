@@ -5,7 +5,9 @@ const NewTaskButton = ({setNewTask, setTask, userId}) => {
     const newTask = {
         title: '',
         description: '',
+        completed: false,
         root: true,
+        supertask:[],
         subtasks: [],
         scheduled: false,
         schedule:{

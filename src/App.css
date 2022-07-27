@@ -358,12 +358,14 @@ time, mark, audio, video {
 .content-container .work-station .color-picker-container{
     grid-area: 1 / 7 / span 4 / span 3;
     padding: 10px;
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 .content-container .work-station .ongoing-list{
     grid-area: 5 / 7 / span 8 / span 6;
+    padding: 15px;
 }
 @keyframes slideIn {
     0%{
@@ -636,11 +638,14 @@ time, mark, audio, video {
 /* ColorPicker */
 .color-picker {
     position: relative;
-    padding: 20px;
-    width: 170px;
+    width: 130px;
     height: 140px;
+    margin: auto;
     box-sizing: border-box;
     border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    flex-flow: column;
 }
 .color-picker .colors {
     display: grid;
@@ -667,6 +672,10 @@ time, mark, audio, video {
 .color-picker .custom-color-input input {
     width: 100%;
     border: none;
+    color: #333;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 500;
+    letter-spacing: 1px;
 }
 .color-picker .custom-color-input input:focus {
     outline: none;
@@ -699,6 +708,7 @@ time, mark, audio, video {
     cursor: pointer;
 }
 .tag-filter .listed-tag input{
+    grid-area: 1/2/2/4;
     font-family: 'Montserrat';
     border: none;
     border-bottom: 1px solid #ccc;
@@ -706,12 +716,15 @@ time, mark, audio, video {
     width: 100%;
 }
 .tag-filter .listed-tag .options{
+    padding-top: 5px;
+    grid-area: 2/2/2/4;
     display: flex;
     align-items: center;
     justify-content: space-evenly;
 }
 .tag-filter .listed-tag .options img{
     height: 10px;
+    padding: auto;
 }
 .tag-filter .listed-tag .edit{
     opacity: 0;
@@ -723,23 +736,33 @@ time, mark, audio, video {
     justify-content: flex-end;
 }
 .tag-filter .new-tag-create-mode{
+    border: 1px solid #449884;
+    border-radius: 10px;
     display: grid;
-    grid-template-columns: 1fr 40px;
+    align-items: center;
+    grid-template-columns: 1fr 65px;
 }
 .tag-filter .new-tag-create-mode .options{
+    cursor: pointer;
+    outline: 1px solid #449884;
+    background-color: #9FE4D4;
+    border-radius: 10px;
+    height: 20px;
     display: flex;
     align-items: center;
-    justify-content: space-evenly;
+    justify-content: center;
 }
 .tag-filter .new-tag-create-mode .options img{
     height: 10px;
 }
 .tag-filter .new-tag-create-mode input{
     font-family: 'Montserrat';
+    border-radius: 10px;
     width: 100%;
     border: none;
-    border-bottom: 1px solid #ccc;
     outline: none;
+    padding: 0 5px;
+    box-sizing: border-box;
 }
 .tag-filter .new-tag-create-mode .options img{
     cursor: pointer;
@@ -753,7 +776,7 @@ time, mark, audio, video {
     padding: 10px;
     display: grid;
     grid-template-columns: 3.5fr 1fr;
-    grid-template-rows:  50px 1fr 150px;
+    grid-template-rows:  50px 1fr 160px;
     gap: 10px;
 }
 .content-container .task-list-view .module{
@@ -771,6 +794,7 @@ time, mark, audio, video {
 }
 .content-container .task-list-view .color-picker-container{
     grid-area: 3 / 2 / span 1 / span 1;
+    position: relative;
 }
 .content-container .task-list-view .ongoing-completed-filter{
     grid-area: 3 / 2 / span 1 / span 1;
@@ -870,7 +894,7 @@ time, mark, audio, video {
 }
 .all-task-list .task-list .listed-task .ongoing img{
     animation-name: raiseFlag;
-    animation-duration: 0.5s;
+    animation-duration: 0.2s;
     cursor: pointer;
 }
 .all-task-list .task-list .listed-task .not-ongoing{
@@ -879,7 +903,7 @@ time, mark, audio, video {
 }
 .all-task-list .task-list .listed-task .not-ongoing img{
     animation-name: lowerFlag;
-    animation-duration: 0.5s;
+    animation-duration: 0.2s;
     cursor: pointer;
     display: flex;
     justify-content: center;
@@ -889,7 +913,7 @@ time, mark, audio, video {
 .all-task-list .task-list .listed-task .not-ongoing img:hover{
     cursor: pointer;
     transform: rotate(45deg);
-    transition: transform 0.5s;
+    transition: transform 0.2s;
     display: flex;
     justify-content: center;
     opacity: 1;
@@ -1045,4 +1069,14 @@ time, mark, audio, video {
 .saved-tasks .active-list .task-list .listed-task .curved-arrow{
     height: 15px;
     transform: rotate(180deg);
+}
+
+/* loading */
+@keyframes rotate {
+    from{ transform: rotate(0deg)}
+    to{transform: rotate(360deg);}
+}
+.loading{
+    width: 18px;
+    animation: rotate 1s linear infinite;
 }

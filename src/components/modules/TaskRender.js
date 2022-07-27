@@ -1,7 +1,7 @@
-import { useMutation, useQuery } from '@apollo/client';
+import { useApolloClient, useMutation, useQuery } from '@apollo/client';
 import { useEffect, useState } from 'react';
 import { asset } from '../../assets/asset';
-import { ALL_ROOT_TASKS, DELETE_TASK, EDIT_TASK, GET_TASK_TREE, ORPHAN_SAVED_TASKS, SAVE_TASK, USER } from '../../queries';
+import { DELETE_TASK, EDIT_TASK, GET_TASK_TREE, ORPHAN_SAVED_TASKS, SAVE_TASK, USER } from '../../queries';
 import ReadTask from './taskRenderModes/ReadTask';
 import moment from 'moment';
 
@@ -39,22 +39,12 @@ const TaskRender = ({
         : schedules
 
     // apollo hooks
-    const [deleteTask] = useMutation(DELETE_TASK, {
-        refetchQueries: [
-            { query: ALL_ROOT_TASKS },
-            { query: GET_TASK_TREE, variables: {id:taskpadTask ? taskpadTask.id : null} 
-        }]
-    })
+    const { cache } = useApolloClient();
+    const [deleteTask] = useMutation(DELETE_TASK)
     const [saveTask] = useMutation(SAVE_TASK, {
         refetchQueries: [{query: ORPHAN_SAVED_TASKS}]
     })
-    const [saveEditedTask] = useMutation(EDIT_TASK, {
-            refetchQueries: [
-                { query: ALL_ROOT_TASKS },
-                { query: GET_TASK_TREE }
-            ]
-        }
-    )
+    const [saveEditedTask] = useMutation(EDIT_TASK)
     const user = useQuery(USER)
     const taskTree = useQuery(GET_TASK_TREE, {variables: {id:task.id}})
 
@@ -83,6 +73,7 @@ const TaskRender = ({
     const newTask = {
         title: '',
         description: '',
+        completed: false,
         root: false,
         subtasks: [],
         supertask: task.supertask ? task.supertask.concat(task.id) : [task.id],
@@ -141,16 +132,57 @@ const TaskRender = ({
     }
 
     const handleCheckPlease = () => {
+        // Prevents sending requests if id is temporary id only
+        if(task.id==='temp-id'){return}
+        
         saveEditedTask({variables: {id: task.id, completed: !task.completed}})
+        cache.modify({
+            id: `Task:${task.id}`,
+            fields: {
+                completed() {
+                    return !task.completed
+                },
+            }
+        })
     }
 
     const handleOptions = (option) => {
+        // Prevents sending requests if id is temporary id only
+        if(task.id==='temp-id'){return}
+
         if (option === 'delete') {
-            setNotification(`Deleted: ${task.title.substring(0,40)}`)
-            deleteTask({variables: { id:task.id }})
+            // If task is a root task
             if(taskpadTask.id === task.id) {
                 setTaskpadTask(null)
+
+                if(task.root){
+                    cache.updateQuery({query: USER}, data => ({
+                        me: {...data.me, ongoing:data.me.ongoing.filter(ongoingId => ongoingId !== task.id)}
+                    }))
+                }
+                
+            // if task is a subtask
+            } else {
+                cache.modify({
+                    id: `Task:${task.supertask[task.supertask.length - 1]}`,
+                    fields: {
+                      subtasks(existingSubtaskRefs, { readField }) {
+                        return existingSubtaskRefs.filter(
+                          subtaskRef => task.id !== readField('id', subtaskRef)
+                        );
+                      },
+                    },
+                })
             }
+
+            // Deleting from the cache
+            cache.evict({id:`Task:${task.id}`})
+            cache.gc()
+
+            // Sending delete request
+            setNotification(`Deleted: ${task.title.substring(0,40)}`)
+            deleteTask({variables: { id:task.id }})
+
         } else if (option === 'edit') {
             setTaskToEdit(task)
             setTasktoEditLocation(location)
@@ -175,10 +207,8 @@ const TaskRender = ({
 
     // auto-update render 
     useEffect(()=> {
-        if (!taskTree.loading && taskTree.data && taskTree.data.taskTree!==task) {
+        if (!taskTree.loading && taskTree.data) {
             setTask({...taskTree.data.taskTree})
-        } else if (taskpadTask.id === task.id && !taskTree.loading && taskTree.data===undefined) {
-            taskTree.refetch()
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
     },[taskTree.data])
@@ -193,6 +223,7 @@ const TaskRender = ({
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
     },[propTask, task])
+
 
     // temporal manager
     useEffect(()=>{
@@ -225,6 +256,13 @@ const TaskRender = ({
                     }
                     const newSchedule = resetSchedule({...scheduleCopy}) 
                     saveEditedTask({variables: {id: task.id, schedule: newSchedule, completed: false}})
+                    cache.modify({
+                        id: `Task:${task.id}`,
+                        fields: {
+                            schedule() {return newSchedule},
+                            completed() {return false}
+                        }
+                    })
                 }
             }
         }
@@ -236,6 +274,7 @@ const TaskRender = ({
         <div className="task">
             <div className="check-and-line">
                 <div className="checkbox" onClick={handleCheckPlease}>
+                    {task.id === 'temp-id' && <img className='loading' src={asset.loading} alt='loading' />}
                     {task.completed && <img src={asset.check} alt="check" />}
                 </div>
                 {expand && task.subtasks && task.subtasks.length>0 ? <div className="line"></div> : null}

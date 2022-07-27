@@ -36,26 +36,29 @@ const ColorPicker = ({tag, setTag, show, setShow}) => {
     }
 
     return (  
-        <div className="color-picker" style={{border: `2px solid ${tag.color}`}}>
-            <img 
-                src={asset.greyCross} 
-                alt="grey cross" 
-                onClick={()=>setShow(false)}
-                style={{position:'absolute', top:5, right:5, cursor:'pointer'}}
-            />
-            <div className="colors">
-                {defaultColors.map(color=> <ColorSquare color={color} tag={tag} setTag={setTag} key={color}/>)}
-                <ColorSquare color={customColor} tag={tag} setTag={setTag} />
-            </div>
-            <div className="custom-color-input">
-                <div className="hash">#</div>
-                <input
-                    type="text" 
-                    value={customColorText.substr(1)}
-                    onChange={({target})=> handleChange(`#${target.value}`)}
+        <div className="color-picker-container module" style={{border: `2px solid ${tag.color}`}}>
+                <img 
+                    src={asset.greyCross} 
+                    alt="grey cross" 
+                    onClick={()=>setShow(false)}
+                    style={{position:'absolute', top:10, right:10, cursor:'pointer'}}
                 />
+            <div className="color-picker">
+                <div className="colors">
+                    {defaultColors.map(color=> <ColorSquare color={color} tag={tag} setTag={setTag} key={color}/>)}
+                    <ColorSquare color={customColor} tag={tag} setTag={setTag} />
+                </div>
+                <div className="custom-color-input">
+                    <div className="hash">#</div>
+                    <input
+                        type="text" 
+                        value={customColorText.substr(1)}
+                        onChange={({target})=> handleChange(`#${target.value}`)}
+                    />
+                </div>
             </div>
         </div>
+
     );
 }
  

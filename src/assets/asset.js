@@ -17,6 +17,7 @@ import curvedArrow from './CurvedArrow.svg'
 import thickGreenCheck from './ThickGreenCheck.svg'
 import power from './Power.svg'
 import sideQuestFullLogo from './SideQuestFullLogo.svg'
+import loading from './Loading.png'
 
 export const asset = {
     selected,
@@ -38,4 +39,5 @@ export const asset = {
     thickGreenCheck,
     power,
     sideQuestFullLogo,
+    loading,
 }
