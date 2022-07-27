@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/Side-Quest-Frontend-V1/static/css/main.c72c5174.css",
-    "main.js": "/Side-Quest-Frontend-V1/static/js/main.a925eb2c.js",
+    "main.css": "/Side-Quest-Frontend-V1/static/css/main.7f0564c9.css",
+    "main.js": "/Side-Quest-Frontend-V1/static/js/main.4e9250db.js",
     "static/media/SideQuestFullLogo.svg": "/Side-Quest-Frontend-V1/static/media/SideQuestFullLogo.1d38e508653a9e0233cecbfa164312c2.svg",
     "static/media/Edit.svg": "/Side-Quest-Frontend-V1/static/media/Edit.0fdad96dd393c3a5b7ae77b9ebf4f9b6.svg",
     "static/media/TrashCan.svg": "/Side-Quest-Frontend-V1/static/media/TrashCan.cdb9c9be18575bc0e9be25682819b297.svg",
@@ -22,11 +22,11 @@
     "static/media/Check.svg": "/Side-Quest-Frontend-V1/static/media/Check.89e11b4cc6a6245521ba9e9d58664ebc.svg",
     "static/media/Arrow.svg": "/Side-Quest-Frontend-V1/static/media/Arrow.e6722f21dc45f74665e7d52554f47c58.svg",
     "static/media/Tag.svg": "/Side-Quest-Frontend-V1/static/media/Tag.11c862f99427e913af08cb7c884745b5.svg",
-    "main.c72c5174.css.map": "/Side-Quest-Frontend-V1/static/css/main.c72c5174.css.map",
-    "main.a925eb2c.js.map": "/Side-Quest-Frontend-V1/static/js/main.a925eb2c.js.map"
+    "main.7f0564c9.css.map": "/Side-Quest-Frontend-V1/static/css/main.7f0564c9.css.map",
+    "main.4e9250db.js.map": "/Side-Quest-Frontend-V1/static/js/main.4e9250db.js.map"
   },
   "entrypoints": [
-    "static/css/main.c72c5174.css",
-    "static/js/main.a925eb2c.js"
+    "static/css/main.7f0564c9.css",
+    "static/js/main.4e9250db.js"
   ]
 }
