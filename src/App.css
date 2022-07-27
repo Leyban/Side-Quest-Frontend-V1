@@ -737,17 +737,18 @@ time, mark, audio, video {
 }
 .tag-filter .new-tag-create-mode{
     border: 1px solid #449884;
-    border-radius: 10px;
+    border-radius: 6px;
     display: grid;
     align-items: center;
     grid-template-columns: 1fr 65px;
+    margin-left: 10px;
 }
 .tag-filter .new-tag-create-mode .options{
     cursor: pointer;
     outline: 1px solid #449884;
     background-color: #9FE4D4;
-    border-radius: 10px;
-    height: 20px;
+    border-radius: 6px;
+    height: 25px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -757,7 +758,7 @@ time, mark, audio, video {
 }
 .tag-filter .new-tag-create-mode input{
     font-family: 'Montserrat';
-    border-radius: 10px;
+    border-radius: 5px;
     width: 100%;
     border: none;
     outline: none;
@@ -775,7 +776,7 @@ time, mark, audio, video {
     box-sizing: border-box;
     padding: 10px;
     display: grid;
-    grid-template-columns: 3.5fr 1fr;
+    grid-template-columns: 3.2fr 1fr;
     grid-template-rows:  50px 1fr 160px;
     gap: 10px;
 }

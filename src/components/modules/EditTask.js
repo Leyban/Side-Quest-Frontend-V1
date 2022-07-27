@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from "@apollo/client"
 import { useEffect, useState } from "react"
-import { ALL_ROOT_TASKS, ALL_TAGS, EDIT_TASK, NEW_TASK, TASK_DETAILS, USER } from "../../queries"
+import { ALL_ROOT_TASKS, ALL_TAGS, EDIT_TASK, GET_TASK_TREE, NEW_TASK, USER } from "../../queries"
 import Dropdown from "../subcomponents/Dropdown"
 import Scheduler from "./Scheduler"
 
@@ -50,30 +50,13 @@ const EditTask = ({
                 }
                 
             } else {
-                cache.modify({
-                    id: `Task:${task.supertask.at(-1)}`,
-                    fields: {
-                      subtasks(existingSubtaskRefs, {readField}) {
-                        
-                        let newTaskRef
-                        try {
-                            newTaskRef = cache.writeFragment({
-                                data: {...newTask},
-                                fragment: TASK_DETAILS
-                            })
-                        } catch (error) {
-                            console.log('taskRef Error', newTask, newTaskRef, error)
-                        }
-                        // if the new task is already present
-                        if (existingSubtaskRefs.some(
-                            ref => readField('id', ref) === newTask.id
-                        )) {
-                            return existingSubtaskRefs;
-                        }
-                        return [...existingSubtaskRefs, newTaskRef]
-                      },
-                    },
-                })
+                cache.updateQuery({query:GET_TASK_TREE, variables:{id: task.supertask.at(-1)}},
+                    data => ({
+                        taskTree: {
+                            ...data.taskTree, 
+                            subtasks: [...data.taskTree.subtasks, {...newTask, __typename:'Task', subtasks:[]}]}
+                    })
+                )
             }
         }
     })

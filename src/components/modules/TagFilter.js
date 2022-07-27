@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useQuery, useMutation } from "@apollo/client";
+import { useQuery, useMutation, useApolloClient } from "@apollo/client";
 import { asset } from "../../assets/asset";
 import ColorPicker from "../subcomponents/ColorPicker";
 import Tag from "../subcomponents/Tag";
@@ -9,6 +9,7 @@ import { ALL_TAGS, USER, DELETE_TAG, CREATE_TAG, EDIT_TAG, ALL_ROOT_TASKS } from
 const ListedTag = ({tag, tagForColorPicker, handleTagClick, tagFilter, setTagFilter, setColorPickerMode}) => {
     const [editMode, setEditMode] = useState(false)
     const [editTagName, setEditTagName] = useState(tag.name)
+    const { cache } = useApolloClient();
     const [deleteTag] = useMutation(DELETE_TAG, {
         refetchQueries: [{ query: ALL_TAGS }, { query: USER }, {query: ALL_ROOT_TASKS}]
     })
@@ -38,6 +39,7 @@ const ListedTag = ({tag, tagForColorPicker, handleTagClick, tagFilter, setTagFil
         if(tagFilter===tag.id){
             return setTagFilter(null)
         }
+        cache.evict({id: `Tag:${tag.id}`})
     }
     const handleCancel = () => {
         setEditMode(false)
@@ -101,7 +103,17 @@ const NewTag = () => {
     const [newTag, setNewTag] = useState(defaultTag)
 
     const [createTag] = useMutation(CREATE_TAG, {
-        refetchQueries: [{ query: ALL_TAGS }, { query: USER }]
+        refetchQueries: [{ query: ALL_TAGS }, { query: USER }],
+        update(
+            cache,
+            {
+                data: {createTag}
+            }
+        ) {
+            cache.updateQuery( {query: ALL_TAGS} , data => ({
+                allTags: [...data.allTags, createTag]
+            }))
+        }
     })
 
     const handleSave = () => {
@@ -109,7 +121,16 @@ const NewTag = () => {
             return
         }
         setNewTag(defaultTag)
-        createTag({variables: {...newTag}})
+        createTag({
+            variables: {...newTag},
+            optimisticResponse:{
+                createTag:{
+                    ...newTag,
+                    __typename: 'Tag',
+                    id: 'temp-tag-id'
+                }
+            }            
+        })
     }
 
     return <div className="new-tag-create-mode">

@@ -28,6 +28,7 @@ const WorkStation = ({user, taskToPass, setTaskToPass, setGreet, setNotification
     }, 0);
 
     const setTaskpadTask = (task, location = []) => {
+        if(task && task.id === 'temp-id'){return}
         setTask(task)
         setTaskLocation(location)
     }

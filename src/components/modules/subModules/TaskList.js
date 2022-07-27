@@ -5,11 +5,23 @@ import Tag from "../../subcomponents/Tag";
 
 
 const ListedTask = ({task, selectedTask, setTask, tags, ongoingColumn, userOngoingList}) => {
+    const user = useQuery(USER)
     const [addToOngoingList] = useMutation(ADD_ONGOING, {
-        refetchQueries: [{query: ALL_ROOT_TASKS}, {query: USER}]
+        update(cache){
+            cache.modify({
+                id: cache.identify(user.data.me),
+                fields:{
+                    ongoing(){return user.data.me.ongoing.concat(task.id)}
+                }
+            })
+        }
     })
     const [removeFromOngoingList] = useMutation(REMOVE_ONGOING, {
-        refetchQueries: [{query: ALL_ROOT_TASKS}, {query: USER}]
+        update(cache){
+            cache.updateQuery({ query: USER }, data => ({
+                me: {...data.me, ongoing: data.me.ongoing.filter(ongoingId => ongoingId !== task.id) }
+            }))
+        }
     })
     const highlightedStyle = {
         color: '#449884'
@@ -21,7 +33,7 @@ const ListedTask = ({task, selectedTask, setTask, tags, ongoingColumn, userOngoi
         }
     }
     const handleFlag = () => {
-        if(userOngoingList.includes(task.id)){
+        if(user.data.me.ongoing.includes(task.id)){
             return removeFromOngoingList({variables: {id: task.id}})
         }
         return addToOngoingList({variables: {id: task.id}})
@@ -29,6 +41,7 @@ const ListedTask = ({task, selectedTask, setTask, tags, ongoingColumn, userOngoi
 
     return <div className="listed-task">
         <div className="unclickable-checkbox">
+            {task.id === 'temp-id' && <img className='loading' src={asset.loading} alt='loading' />}
             {task.completed && <img src={asset.check} alt='check' />}
         </div>
         <div className="task-details" >
@@ -39,7 +52,7 @@ const ListedTask = ({task, selectedTask, setTask, tags, ongoingColumn, userOngoi
                 : <span onClick={()=>setTask(task)}>{task.title}</span>
             }
 
-            {ongoingColumn && <div className={userOngoingList.includes(task.id)? 'ongoing' : 'not-ongoing'}>
+            {ongoingColumn && <div className={user.data.me.ongoing.includes(task.id)? 'ongoing' : 'not-ongoing'}>
                 <img src={asset.greenFlag} alt='green flag' onClick={handleFlag} />
             </div>}
 

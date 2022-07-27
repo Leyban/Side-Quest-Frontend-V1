@@ -44,7 +44,16 @@ const TaskRender = ({
     const [saveTask] = useMutation(SAVE_TASK, {
         refetchQueries: [{query: ORPHAN_SAVED_TASKS}]
     })
-    const [saveEditedTask] = useMutation(EDIT_TASK)
+    const [saveEditedTask] = useMutation(EDIT_TASK, {
+        update(cache, {data: {updateTask}}) {
+            cache.modify({
+                id: cache.identify(task),
+                fields: {
+                    completed() { return updateTask.completed}
+                }
+            })
+        }
+    })
     const user = useQuery(USER)
     const taskTree = useQuery(GET_TASK_TREE, {variables: {id:task.id}})
 
@@ -135,7 +144,12 @@ const TaskRender = ({
         // Prevents sending requests if id is temporary id only
         if(task.id==='temp-id'){return}
         
-        saveEditedTask({variables: {id: task.id, completed: !task.completed}})
+        saveEditedTask({
+            variables: {id: task.id, completed: !task.completed},
+            optimisticResponse: {
+                updateTask:{...task, completed: !task.completed}
+            }
+        },)
         cache.modify({
             id: `Task:${task.id}`,
             fields: {
@@ -164,7 +178,7 @@ const TaskRender = ({
             // if task is a subtask
             } else {
                 cache.modify({
-                    id: `Task:${task.supertask[task.supertask.length - 1]}`,
+                    id: `Task:${task.supertask.at(-1)}`,
                     fields: {
                       subtasks(existingSubtaskRefs, { readField }) {
                         return existingSubtaskRefs.filter(
@@ -207,8 +221,12 @@ const TaskRender = ({
 
     // auto-update render 
     useEffect(()=> {
-        if (!taskTree.loading && taskTree.data) {
+        if (!taskTree.loading && taskTree.data && taskTree.data.taskTree !== task) {
             setTask({...taskTree.data.taskTree})
+
+            if(level === 1){
+                setTaskpadTask(taskTree.data.taskTree)
+            }
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
     },[taskTree.data])

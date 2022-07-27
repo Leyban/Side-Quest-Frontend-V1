@@ -6,6 +6,7 @@ import {createRoot} from 'react-dom/client'
 
 import { getMainDefinition } from '@apollo/client/utilities';
 import { WebSocketLink } from '@apollo/client/link/ws';
+import { mergeArrayByField } from './utils/merge';
 
 const authLink = setContext((_, { headers }) => {
   const token = localStorage.getItem('SideQuest_HQ_Login_Info');
@@ -37,36 +38,20 @@ const splitLink = split(
   authLink.concat(httpLink)
 );
 
+// define Apollo Client cache and link
 const client = new ApolloClient({
   cache: new InMemoryCache({
     typePolicies: {
+      Query:{
+        allRootTasks:{
+          merge: mergeArrayByField('id')
+        }
+      },
       Task: {
         merge: true,
         fields:{
           subtasks:{
-            // merging hellhole to get rid of the warning
-            merge(existing, incoming, { readField, mergeObjects }) {
-              const merged = existing ? existing.slice(0) : [];
-              const subtaskIdToIndex = Object.create(null);
-              if (existing) {
-                existing.forEach((subtask, index) => {
-                  subtaskIdToIndex[readField("id", subtask)] = index;
-                });
-              }
-              incoming.forEach(subtask => {
-                const id = readField("id", subtask);
-                const index = subtaskIdToIndex[id];
-                if (typeof index === "number") {
-                  // Merge the new subtask data with the existing subtask data.
-                  merged[index] = mergeObjects(merged[index], subtask);
-                } else {
-                  // First time we've seen this subtask in this array.
-                  subtaskIdToIndex[id] = merged.length;
-                  merged.push(subtask);
-                }
-              });
-              return merged;
-            }
+            merge: mergeArrayByField('id')
           },
           schedule:{
             merge:true
