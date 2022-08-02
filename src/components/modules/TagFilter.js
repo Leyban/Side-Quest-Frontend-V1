@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useQuery, useMutation, useApolloClient } from "@apollo/client";
 import { asset } from "../../assets/asset";
 import ColorPicker from "../subcomponents/ColorPicker";
@@ -6,12 +6,12 @@ import Tag from "../subcomponents/Tag";
 import { ALL_TAGS, USER, DELETE_TAG, CREATE_TAG, EDIT_TAG, ALL_ROOT_TASKS } from "../.././queries";
 
 
-const ListedTag = ({tag, tagForColorPicker, handleTagClick, tagFilter, setTagFilter, setColorPickerMode}) => {
+const ListedTag = ({tag, handleTagClick, tagFilter, setTagFilter, setColorPickerMode}) => {
     const [editMode, setEditMode] = useState(false)
     const [editTagName, setEditTagName] = useState(tag.name)
     const { cache } = useApolloClient();
     const [deleteTag] = useMutation(DELETE_TAG, {
-        refetchQueries: [{ query: ALL_TAGS }, { query: USER }, {query: ALL_ROOT_TASKS}]
+        // refetchQueries: [{ query: ALL_TAGS }, { query: USER }, {query: ALL_ROOT_TASKS}]
     })
     const [editTag] = useMutation(EDIT_TAG, {
         update(
@@ -31,10 +31,29 @@ const ListedTag = ({tag, tagForColorPicker, handleTagClick, tagFilter, setTagFil
     })
 
     const handleEdit = () => {
+        if(tag.id === 'temp-tag-id') {return}
         setEditMode(true)
     }
     const handleDelete = () => {
-        deleteTag({variables: {id: tag.id}})
+        deleteTag({
+            variables: {id: tag.id},
+            update(cache){
+                cache.updateQuery({query: USER}, data => ({
+                    me: {...data.me, tags:data.me.tags.filter(tagId => tagId !== tag.id)}
+                }))
+                cache.updateQuery({query: ALL_TAGS}, data => ({
+                    allTags: data.allTags.filter(tagIterate => tagIterate.id !== tag.id)
+                }))
+                cache.updateQuery({query: ALL_ROOT_TASKS}, data => ({
+                    allRootTasks: data.allRootTasks.map(taskIterate => {
+                        if (taskIterate.tag === tag.id){
+                            taskIterate.tag = null
+                        }
+                        return taskIterate
+                    })
+                }))
+            }
+        })
         setColorPickerMode(false)
         if(tagFilter===tag.id){
             return setTagFilter(null)
@@ -65,17 +84,13 @@ const ListedTag = ({tag, tagForColorPicker, handleTagClick, tagFilter, setTagFil
         setTagFilter(null)
     }
 
-    useEffect(()=> {
-        if(tagForColorPicker.id === tag.id){
-            editTag({variables: {...tag, color: tagForColorPicker.color}})
-        }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [tagForColorPicker])
-
     const tagClassName = tagFilter===tag.id ? 'listed-tag selected' : 'listed-tag'
 
     return <div className={tagClassName}>
-        <Tag tag={tag} onClick={()=>handleTagClick(tag)}/>
+        {tag.id === 'temp-tag-id' 
+            ? <img className='loading' src={asset.loading} alt='loading' style={{marginLeft: -5}}/>
+            : <Tag tag={tag} onClick={()=>handleTagClick(tag)}/>
+        }
         {editMode 
             ?   <input 
                     type='text'
@@ -152,8 +167,10 @@ const TagFilter = ({colorPickerMode, setColorPickerMode, tagFilter, setTagFilter
     const [tagForColorPicker, setTagForColorPicker] = useState({id:null})
 
     const handleTagClick = (tag) => {
-        if(tagForColorPicker.id === tag.id){
+        if(colorPickerMode && tagForColorPicker.id === tag.id){
             setColorPickerMode(!colorPickerMode)
+        } else if (!colorPickerMode){
+            setColorPickerMode(true)
         }
         setTagForColorPicker(tag)
     }
@@ -179,7 +196,6 @@ const TagFilter = ({colorPickerMode, setColorPickerMode, tagFilter, setTagFilter
                     key={tag.id} 
                     tag={tag} 
                     handleTagClick={handleTagClick}
-                    tagForColorPicker={tagForColorPicker}
                     tagFilter={tagFilter}
                     setTagFilter={setTagFilter}
                     setColorPickerMode={setColorPickerMode}

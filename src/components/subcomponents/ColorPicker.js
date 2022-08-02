@@ -1,9 +1,37 @@
+import { useMutation } from "@apollo/client"
 import { useState } from "react"
 import { asset } from "../../assets/asset"
+import { EDIT_TAG } from "../../queries"
 
 const ColorSquare = ({color, tag, setTag}) => {
+    const [editTag] = useMutation(EDIT_TAG, {
+        update(
+            cache,
+            {
+                data: { editTag }
+            }
+        ) {
+            cache.modify({
+                id: cache.identify(editTag),
+                fields: {
+                    color(){return editTag.color},
+                    name(){return editTag.name}
+                }
+            })
+        }
+    })
     const handleClick = () => {
         setTag({...tag, color})
+        editTag({
+            variables: {...tag, color},
+            optimisticResponse: {
+                editTag: {
+                    ...tag,
+                    color,
+                    __typename: 'Tag'
+                }
+            }
+        })
     }
 
     return <svg style={{cursor:'pointer'}} onClick={handleClick} width="25" height="25" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">

@@ -1,11 +1,13 @@
 import { useMutation, useQuery } from "@apollo/client";
+import { useState } from "react";
 import { asset } from "../../../assets/asset";
 import { ADD_ONGOING, ALL_ROOT_TASKS, ALL_TAGS, REMOVE_ONGOING, USER } from "../../../queries";
 import Tag from "../../subcomponents/Tag";
 
 
-const ListedTask = ({task, selectedTask, setTask, tags, ongoingColumn, userOngoingList}) => {
+const ListedTask = ({task, selectedTask, setTask, tags, ongoingColumn}) => {
     const user = useQuery(USER)
+    const [isOngoing, setIsOngoing] = useState(user.data.me.ongoing.includes(task.id))
     const [addToOngoingList] = useMutation(ADD_ONGOING, {
         update(cache){
             cache.modify({
@@ -34,9 +36,21 @@ const ListedTask = ({task, selectedTask, setTask, tags, ongoingColumn, userOngoi
     }
     const handleFlag = () => {
         if(user.data.me.ongoing.includes(task.id)){
-            return removeFromOngoingList({variables: {id: task.id}})
+            setIsOngoing(false)
+            return removeFromOngoingList({
+                variables: {id: task.id},
+                optimisticResponse: {
+                    removeOngoing:{}
+                }
+            })
         }
-        return addToOngoingList({variables: {id: task.id}})
+        setIsOngoing(true)
+        return addToOngoingList({
+            variables: {id: task.id},
+            optimisticResponse: {
+                addOngoing:{}
+            }
+        })
     }
 
     return <div className="listed-task">
@@ -52,7 +66,7 @@ const ListedTask = ({task, selectedTask, setTask, tags, ongoingColumn, userOngoi
                 : <span onClick={()=>setTask(task)}>{task.title}</span>
             }
 
-            {ongoingColumn && <div className={user.data.me.ongoing.includes(task.id)? 'ongoing' : 'not-ongoing'}>
+            {ongoingColumn && <div className={isOngoing? 'ongoing' : 'not-ongoing'}>
                 <img src={asset.greenFlag} alt='green flag' onClick={handleFlag} />
             </div>}
 

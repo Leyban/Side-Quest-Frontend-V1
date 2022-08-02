@@ -43,8 +43,15 @@ const client = new ApolloClient({
   cache: new InMemoryCache({
     typePolicies: {
       Query:{
-        allRootTasks:{
-          merge: mergeArrayByField('id')
+        fields:{
+          allRootTasks:{
+            merge: mergeArrayByField('id')
+          },
+          allTags: {
+            merge(existing = [], incoming) {
+              return [...incoming];
+            }
+          }
         }
       },
       Task: {
