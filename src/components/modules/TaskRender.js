@@ -225,7 +225,7 @@ const TaskRender = ({
             setTask({...taskTree.data.taskTree})
 
             if(level === 1){
-                setTaskpadTask(taskTree.data.taskTree)
+                setTaskpadTask(taskTree.data.taskTree, currentLocation)
             }
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
