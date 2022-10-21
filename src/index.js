@@ -10,7 +10,6 @@ import { mergeArrayByField } from './utils/merge';
 
 const authLink = setContext((_, { headers }) => {
   const token = localStorage.getItem('SideQuest_HQ_Login_Info');
-  console.log(headers);
   return {
     headers: {
       ...headers,
