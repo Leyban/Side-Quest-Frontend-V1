@@ -10,20 +10,22 @@ import { mergeArrayByField } from './utils/merge';
 
 const authLink = setContext((_, { headers }) => {
   const token = localStorage.getItem('SideQuest_HQ_Login_Info');
+  console.log(headers);
   return {
     headers: {
       ...headers,
       authorization: token ? `bearer ${token}` : null,
+      origin: document.location.origin
     },
   };
 });
 
 const httpLink = new HttpLink({
-  uri: `https://guarded-woodland-41534.herokuapp.com/`,
+  uri: `https://side-quest-backend-v1.onrender.com/`,
 });
 
 const wsLink = new WebSocketLink({
-  uri: `wss://guarded-woodland-41534.herokuapp.com/graphql`,
+  uri: `wss://side-quest-backend-v1.onrender.com/graphql`,
   options: {
     reconnect: true,
   },
